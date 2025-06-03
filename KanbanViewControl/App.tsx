@@ -42,12 +42,15 @@ const App = ({ context, notificationPosition }: IProps) => {
         const match = view.columns?.find((c) => c.title === rec[view.key]);
         col = match ? match.id : "unallocated";
       }
+      
       return { id: rec.id, column: col, ...rec };
     });
 
   const handleViewChange = () => {
     if (!activeView || !activeView.columns) return;
     const cards = filterRecords(activeView);
+    console.log(cards);
+    
     let activeCols = activeView.columns;
     if (
       activeView.type !== "BPF" &&

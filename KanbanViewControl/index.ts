@@ -15,18 +15,27 @@ export class KanbanViewControl implements ComponentFramework.ReactControl<IInput
         context.mode.trackContainerResize(true);
     }
 
+
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
-        return React.createElement(App, { 
-            context,  
-            notificationPosition: context.parameters.notificationPosition?.raw
-        });
+    return React.createElement(App, { 
+        context,  
+        notificationPosition: context.parameters.notificationPosition?.raw
+    });
     }
 
+    // public updateView(ctx: ComponentFramework.Context<IInputs>): React.ReactElement {
+    //     console.info("[PCF] updateView");        // đã thấy
+    //     return React.createElement("div",
+    //         { style: { padding: 12, background: "lightgreen" } },
+    //         "HELLO FROM PCF");
+    // }
+
     public getOutputs(): IOutputs {
-        return { };
+        return {};
     }
 
     public destroy(): void {
         this.control.destroy()
     }
 }
+

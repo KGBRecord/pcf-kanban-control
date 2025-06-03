@@ -13,13 +13,17 @@ interface Column {
 
 export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
     const raw = context.parameters.collection?.raw as string | undefined
-
+    // console.log(raw);
+    // console.log(context.parameters.bpfStepsOptionsOrder?.raw as string | undefined);
+    
     const records: any[] = useMemo(() => {
         if (isNullOrEmpty(raw)) return []
         try {
-            const parsed = JSON.parse(raw||"[]")
+            const parsed = JSON.parse(raw?.replace(/""/g, '"')||"[]")
             return Array.isArray(parsed) ? parsed : []
-        } catch {
+        } catch(err) {
+            console.log(err);
+            
             return []
         }
     }, [raw])
@@ -29,7 +33,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
     const stepOrder: { id: string; order: number }[] = useMemo(() => {
         if (isNullOrEmpty(orderCfgRaw)) return []
         try {
-            return JSON.parse(orderCfgRaw || "{}")
+            return JSON.parse(orderCfgRaw?.replace(/""/g, '"') || "[]")
         } catch {
             return []
         }
