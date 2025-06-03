@@ -9,7 +9,11 @@ import { moveCard } from '../lib/card-drag'
 
 export type ColumnId = ColumnItem[][number]['id']
 
-export const useDnD = (columns: ColumnItem[]) => {
+export const useDnD = (
+  columns: ColumnItem[],
+  setDragResult: (val: string) => void,
+  notifyOutputChanged: () => void,
+) => {
   const { context, activeView, setColumns } = useContext(BoardContext)
   const { updateRecord } = useCollection(context)
   const { openForm } = useNavigation(context)
@@ -48,6 +52,10 @@ export const useDnD = (columns: ColumnItem[]) => {
       const newVal = destinationColumn?.title
       ;(sourceCard![Object.keys(record.update)[0]] as CardInfo).value = newVal as string
       movedCards = await moveCard(columns, sourceCard, result)
+
+      // 🔥 Gán giá trị output và trigger notify
+      setDragResult(`Moved to: ${newVal}`)
+      notifyOutputChanged()
     }
 
     setColumns(movedCards ?? [])

@@ -3,39 +3,39 @@ import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import App from "./App";
 
 export class KanbanViewControl implements ComponentFramework.ReactControl<IInputs, IOutputs> {
-    private control: ComponentFramework.ReactControl<IInputs, IOutputs>;
-
-    constructor() { }
+    private _context!: ComponentFramework.Context<IInputs>;
+    private _notifyOutputChanged!: () => void;
+    private _dragResult: string = ""; // 🔥 Biến lưu output
 
     public init(
         context: ComponentFramework.Context<IInputs>,
         notifyOutputChanged: () => void,
         _: ComponentFramework.Dictionary
     ): void {
+        this._context = context;
+        this._notifyOutputChanged = notifyOutputChanged;
         context.mode.trackContainerResize(true);
     }
 
-
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
-    return React.createElement(App, { 
-        context,  
-        notificationPosition: context.parameters.notificationPosition?.raw
-    });
-    }
+        this._context = context;
 
-    // public updateView(ctx: ComponentFramework.Context<IInputs>): React.ReactElement {
-    //     console.info("[PCF] updateView");        // đã thấy
-    //     return React.createElement("div",
-    //         { style: { padding: 12, background: "lightgreen" } },
-    //         "HELLO FROM PCF");
-    // }
+        return React.createElement(App, {
+            context: this._context,
+            notificationPosition: context.parameters.notificationPosition?.raw,
+            setDragResult: (val: string) => {
+                this._dragResult = val;
+                this._notifyOutputChanged();
+            },
+            notifyOutputChanged: this._notifyOutputChanged
+        });
+    }
 
     public getOutputs(): IOutputs {
-        return {};
+        return {
+            dragResult: this._dragResult // 🔥 Trả ra output
+        };
     }
 
-    public destroy(): void {
-        this.control.destroy()
-    }
+    public destroy(): void { }
 }
-
