@@ -1,49 +1,58 @@
-import * as React from 'react'
-import { useContext, useMemo } from 'react'
-import { DragDropContext, DropResult, ResponderProvided } from '@hello-pangea/dnd'
-import { CommandBar, Column } from '..'
-import { BoardContext } from '../../context/board-context'
-import { useDnD } from '../../hooks/useDnD'
+import * as React from "react";
+import { useContext } from "react";
+import {
+  DragDropContext,
+  DropResult,
+  ResponderProvided,
+} from "@hello-pangea/dnd";
+import { Column } from "..";
+import { BoardContext } from "../../context/board-context";
+import { useDnD } from "../../hooks/useDnD";
 
 const Board = () => {
-  const { context, columns, activeView } = useContext(BoardContext)
-  const { onDragEnd } = useDnD(columns)
+  const { context, columns } = useContext(BoardContext);
+  const { onDragEnd } = useDnD(columns);
 
-  const handleCardDrag = async (result: DropResult, _resp: ResponderProvided) => {
-    if (!result.destination || !activeView) return
+  const stepField = context.parameters.stepField?.raw;
 
-    const field      = activeView.uniqueName
-    const destId     = result.destination.droppableId
-    const columnName = activeView.columns?.find(c => c.id === destId)?.title
+  const handleCardDrag = async (
+    result: DropResult,
+    _resp: ResponderProvided
+  ) => {
+    if (!result.destination || !stepField) return;
+
+    const destId = result.destination.droppableId;
 
     const record = {
-      update: { [field as any]: destId === 'unallocated' ? null : destId },
-      id:     result.draggableId,
-      columnName,
-    }
+      update: { [stepField]: destId === "unallocated" ? null : destId },
+      id: result.draggableId,
+      columnName: destId,
+    };
 
-    await onDragEnd(result, record)
-  }
-
-  const hideViews = useMemo(
-    () => context.parameters.hideViewBy?.raw,
-    [context.parameters.hideViewBy],
-  )
+    await onDragEnd(result, record);
+  };
 
   return (
     <div className="main-container">
-      {!hideViews && <CommandBar />}
       <div className="kanban-container">
-        <div className="columns-wrapper">
+        <div
+          className="columns-wrapper"
+          style={{
+            display: "flex",
+            gap: 12,
+            alignItems: "flex-start",
+            overflowX: "auto",
+          }}
+        >
           <DragDropContext onDragEnd={handleCardDrag}>
-            {columns.map(col => (
+            {columns.map((col) => (
               <Column key={col.id} column={col} />
             ))}
           </DragDropContext>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Board
+export default Board;

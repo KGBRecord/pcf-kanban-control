@@ -1,9 +1,9 @@
 import * as React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { IInputs } from "./generated/ManifestTypes";
 import { Board } from "./components";
 import { BoardContext } from "./context/board-context";
-import { ColumnItem, ViewEntity, ViewItem } from "./interfaces";
+import { ColumnItem, ViewEntity } from "./interfaces";
 import Loading from "./components/container/loading";
 import { Toaster } from "react-hot-toast";
 import { unlocatedColumn } from "./lib/constants";
@@ -22,72 +22,68 @@ interface IProps {
 
 const App = ({ context, notificationPosition }: IProps) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [activeView, setActiveView] = useState<ViewItem | undefined>();
   const [columns, setColumns] = useState<ColumnItem[]>([]);
-  const [views, setViews] = useState<ViewItem[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<string | undefined>();
   const [activeViewEntity, setActiveViewEntity] = useState<
     ViewEntity | undefined
   >();
-  const stepFieldRaw = context.parameters.stepField?.raw as string | undefined;
 
-  const { records, getOptionSets, getBusinessProcessFlows } =
-    useCollection(context);
+  const { records, getBusinessProcessFlows } = useCollection(context);
 
-  const filterRecords = (view: ViewItem) =>
-    records.map((rec: any) => {
-      let col: any = "";
-      if (view.type === "BPF") {
-        col = view.records?.find((r) => r.id === rec.id)?.stageName ?? "";
-      } else {
-        const match = view.columns?.find((c) => c.title === rec[view.key]);
-        col = match ? match.id : "unallocated";
-      }
-      
-      return { id: rec.id, column: col, ...rec };
+  const buildCards = (view: any) => {
+    return records.map((rec: any) => {
+      const step =
+        view.records?.find((r: any) => r.id === rec.id)?.stageName ?? "";
+      return {
+        id: rec.id,
+        column: step,
+        ...rec,
+      };
+      const flat = flattenRecord(rec);
+      return {
+        ...flat,
+        id: rec.id,
+        column: step,
+      };
     });
+  };
 
-  const handleViewChange = () => {
-    if (!activeView || !activeView.columns) return;
-    const cards = filterRecords(activeView);
-    console.log(cards);
-    
-    let activeCols = activeView.columns;
-    if (
-      activeView.type !== "BPF" &&
-      (cards.some((c) => !(activeView.key in c)) ||
-        cards.some((c) => c[activeView.key] === ""))
-    )
-      activeCols = [unlocatedColumn, ...activeCols];
-    const cols = activeCols.map((col) => ({
+  const flattenRecord = (rec: any): any => {
+    const result: any = {};
+    for (const key in rec) {
+      const val = rec[key];
+      if (val && typeof val === "object" && "label" in val) {
+        result[key] = val.label;
+      } else if (val && typeof val === "object" && "value" in val) {
+        result[key] = val.value;
+      } else {
+        result[key] = val;
+      }
+    }
+    return result;
+  };
+
+  const setupColumns = async () => {
+    const [bpfView] = await getBusinessProcessFlows(); // chỉ dùng 1 loại duy nhất
+    if (!bpfView) {
+      setIsLoading(false);
+      return;
+    }
+
+    const cards = buildCards(bpfView);
+    const cols = bpfView.columns.map((col) => ({
       ...col,
       cards: cards.filter((c) => c.column === col.id),
     }));
-    setColumns(cols);
-  };
 
-  const handleColumnsChange = async () => {
-    const optionViews = await getOptionSets();
-    const processViews = await getBusinessProcessFlows();
-    const allViews = [...(optionViews ?? []), ...(processViews ?? [])];
-    setViews(allViews);
-    const defView = context.parameters.defaultView?.raw;
-    if (defView) {
-      setActiveView(allViews.find((v) => v.text === defView) ?? allViews[0]);
-    } else if (activeView) {
-      setActiveView(allViews.find((v) => v.key === activeView.key));
-    } else {
-      setActiveView(allViews[0]);
-    }
+    setColumns(cols);
     setIsLoading(false);
   };
 
   useEffect(() => {
     setSelectedEntity("collection");
-    handleColumnsChange();
+    setupColumns();
   }, [records]);
-
-  useEffect(handleViewChange, [activeView]);
 
   if (isLoading) return <Loading />;
 
@@ -95,9 +91,9 @@ const App = ({ context, notificationPosition }: IProps) => {
     <BoardContext.Provider
       value={{
         context,
-        views,
-        activeView,
-        setActiveView,
+        views: [], // không có lựa chọn view
+        activeView: undefined, // không dùng view chuyển đổi
+        setActiveView: () => {},
         columns,
         setColumns,
         activeViewEntity,

@@ -1,37 +1,48 @@
-import * as React from 'react'
-import { useContext, useMemo } from 'react'
-import { Text } from '@fluentui/react/lib/Text'
-import CardHeader from './CardHeader'
-import CardBody from './CardBody'
-import CardFooter from './CardFooter'
-import IconButton from '../button/IconButton'
-import { CardItem, CardInfo } from '../../interfaces'
-import { CardDetails, CardDetailsList } from './CardDetails'
-import { BoardContext } from '../../context/board-context'
-import { useNavigation } from '../../hooks/useNavigation'
+import * as React from "react";
+import { useContext, useMemo } from "react";
+import { Text } from "@fluentui/react/lib/Text";
+import CardHeader from "./CardHeader";
+import CardBody from "./CardBody";
+import CardFooter from "./CardFooter";
+import IconButton from "../button/IconButton";
+import { CardItem, CardInfo } from "../../interfaces";
+import { CardDetails, CardDetailsList } from "./CardDetails";
+import { BoardContext } from "../../context/board-context";
+import { useNavigation } from "../../hooks/useNavigation";
 
 interface IProps {
-  item: CardItem
+  item: CardItem;
 }
 
 const Card = ({ item }: IProps) => {
-  const { context } = useContext(BoardContext)
-  const { openForm } = useNavigation(context)
+  const { context } = useContext(BoardContext);
+  const { openForm } = useNavigation(context);
+
+  const cardWidthRaw = context.parameters.cardWidth?.raw;
+  const cardWidth =
+    cardWidthRaw && !isNaN(Number(cardWidthRaw)) ? Number(cardWidthRaw) : 280;
 
   const onCardClick = () => {
-    openForm(undefined, item.id.toString())
-  }
+    openForm(undefined, item.id.toString());
+  };
 
   const cardDetails = useMemo(
     () =>
       Object.entries(item).filter(
-        k => !['title', 'tag', 'id', 'column'].includes(k[0]),
+        (k) => !["title", "tag", "id", "column"].includes(k[0])
       ),
-    [item],
-  )
+    [item]
+  );
 
   return (
-    <div className="card-container">
+    <div
+      className="card-container"
+      style={{
+        width: cardWidth,
+        minWidth: 180,
+        maxWidth: 500,
+      }}
+    >
       <CardHeader>
         <Text className="card-title" nowrap>
           {item?.title?.value ?? item?.title}
@@ -39,7 +50,7 @@ const Card = ({ item }: IProps) => {
       </CardHeader>
       <CardBody>
         <CardDetailsList>
-          {cardDetails.map(info => (
+          {cardDetails.map((info) => (
             <CardDetails
               key={`${info[0]}-${item.id}`}
               id={item.id}
@@ -57,7 +68,7 @@ const Card = ({ item }: IProps) => {
         />
       </CardFooter>
     </div>
-  )
-}
+  );
+};
 
-export default Card
+export default Card;

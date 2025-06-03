@@ -3,118 +3,163 @@ import { IInputs } from '../generated/ManifestTypes'
 import { isNullOrEmpty } from '../lib/utils'
 
 interface Column {
-    id: string
-    key: string
-    label: string
-    title: string
-    order: number
-    records: { id: any; stageName: string }[]
+  id: string
+  key: string
+  label: string
+  title: string
+  order: number
+  records: { id: any; stageName: string }[]
 }
 
 export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
-    const raw = context.parameters.collection?.raw as string | undefined
-    
-    const records: any[] = useMemo(() => {
-        if (isNullOrEmpty(raw)) return []
-        try {
-            const parsed = JSON.parse(raw?.replace(/""/g, '"')||"[]")
-            return Array.isArray(parsed) ? parsed : []
-        } catch(err) {
-            console.log(err);
-            
-            return []
-        }
-    }, [raw])
+  const raw = context.parameters.collection?.raw as string | undefined
+  const stepField = context.parameters.stepField?.raw as string | undefined
+  const orderCfgRaw = context.parameters.bpfStepsOptionsOrder?.raw as string | undefined
 
-    const orderCfgRaw = context.parameters.bpfStepsOptionsOrder?.raw as string | undefined
+  // ✅ Parse collection (an toàn, không replace)
+  const records: any[] = useMemo(() => {
+    if (typeof raw !== 'string' || raw.trim() === '') return []
+    try {
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : []
+    } catch (err) {
+      console.error('❌ Failed to parse collection:', err)
+      return []
+    }
+  }, [raw])
 
-    const stepOrder: { id: string; order: number }[] = useMemo(() => {
-        if (isNullOrEmpty(orderCfgRaw)) return []
-        try {
-            return JSON.parse(orderCfgRaw?.replace(/""/g, '"') || "[]")
-        } catch {
-            return []
-        }
-    }, [orderCfgRaw])
+  // ✅ Parse step order config
+  const stepOrder: { id: string; order: number }[] = useMemo(() => {
+    if (!stepField || typeof orderCfgRaw !== 'string' || orderCfgRaw.trim() === '') return []
 
-    const updateRecord = async (record: any) => Promise.resolve(record)
+    try {
+      const parsed = JSON.parse(orderCfgRaw)
+      if (!Array.isArray(parsed)) return []
 
-    const getBusinessProcessFlows = () => {
-        const columnMap = new Map<string, Column>()
-        records.forEach(rec => {
-            const stage = rec.stageName ?? ''
-            if (!stage) return
-            if (!columnMap.has(stage)) {
-                const cfg = stepOrder.find(o => o.id === stage)
-                columnMap.set(stage, {
-                    id: stage,
-                    key: stage,
-                    label: stage,
-                    title: stage,
-                    order: cfg ? cfg.order : 100,
-                    records: [],
-                })
-            }
-            columnMap.get(stage)!.records.push({ id: rec.id, stageName: stage })
+      const validStepValues = new Set(
+        records.map((r) => r?.[stepField]?.toString().trim()).filter(Boolean)
+      )
+
+      return parsed.filter(
+        (item: any) =>
+          item &&
+          typeof item.id === 'string' &&
+          typeof item.order === 'number' &&
+          validStepValues.has(item.id)
+      )
+    } catch (err) {
+      console.error('❌ Failed to parse stepOrder:', err)
+      return []
+    }
+  }, [orderCfgRaw, stepField, records])
+
+  const updateRecord = async (record: any) => Promise.resolve(record)
+
+  const getBusinessProcessFlows = () => {
+    if (!stepField) return []
+
+    const columnMap = new Map<string, Column>()
+
+    for (const rec of records) {
+      const stepValue = rec?.[stepField]?.toString().trim() ?? ''
+      if (!stepValue) continue
+
+      if (!columnMap.has(stepValue)) {
+        const cfg = stepOrder.find((s) => s.id === stepValue)
+        columnMap.set(stepValue, {
+          id: stepValue,
+          key: stepValue,
+          label: stepValue,
+          title: stepValue,
+          order: cfg?.order ?? -1,
+          records: [],
         })
-        if (columnMap.size === 0) return []
-        const columns = Array.from(columnMap.values()).sort((a, b) => a.order - b.order)
-        return [
-            {
-                key: 'bpf',
-                text: 'Process',
-                uniqueName: 'bpf',
-                type: 'BPF',
-                columns,
-                records: columns.flatMap(c => c.records),
-            },
-        ]
+      }
+
+      columnMap.get(stepValue)!.records.push({
+        id: rec.id,
+        stageName: stepValue,
+      })
     }
 
-    const getOptionSets = () => {
-        if (records.length === 0) return []
-        const fieldNames = Object.keys(records[0]).filter(k => k !== 'id' && k !== 'stageName')
-        const result = fieldNames.reduce((views: any[], field) => {
-            const optionMap = new Map<any, any>()
-            records.forEach(rec => {
-                const v = rec[field]
-                if (v && typeof v === 'object' && 'label' in v) {
-                    const key = v.value ?? v.label
-                    if (!optionMap.has(key)) {
-                        optionMap.set(key, {
-                            key,
-                            id: key,
-                            label: v.label,
-                            title: v.label,
-                            order: 100,
-                        })
-                    }
-                }
+    if (columnMap.size === 0) return []
+
+    const columns = Array.from(columnMap.values()).sort((a, b) => {
+      const aOrdered = a.order >= 0
+      const bOrdered = b.order >= 0
+
+      if (aOrdered && bOrdered) return a.order - b.order
+      if (aOrdered) return -1
+      if (bOrdered) return 1
+
+      return a.title.localeCompare(b.title, 'vi', { sensitivity: 'base' })
+    })
+
+    return [
+      {
+        key: stepField,
+        text: stepField,
+        uniqueName: stepField,
+        type: 'BPF',
+        columns,
+        records: columns.flatMap((c) => c.records),
+      },
+    ]
+  }
+
+  const getOptionSets = () => {
+    if (records.length === 0) return []
+
+    const optionViews: any[] = []
+    const fields = Object.keys(records[0] ?? {}).filter(
+      (k) => k !== 'id' && k !== stepField
+    )
+
+    for (const field of fields) {
+      const optionMap = new Map<any, any>()
+
+      for (const rec of records) {
+        const val = rec[field]
+        if (val && typeof val === 'object' && 'label' in val) {
+          const key = val.value ?? val.label
+          if (!optionMap.has(key)) {
+            optionMap.set(key, {
+              key,
+              id: key,
+              label: val.label,
+              title: val.label,
+              order: 100,
             })
-            if (optionMap.size > 0) {
-                views.push({
-                    key: field,
-                    text: field,
-                    uniqueName: field,
-                    dataType: 'OptionSet',
-                    columns: Array.from(optionMap.values()),
-                })
-            }
-            return views
-        }, [])
-        return result
+          }
+        }
+      }
+
+      if (optionMap.size > 0) {
+        optionViews.push({
+          key: field,
+          text: field,
+          uniqueName: field,
+          dataType: 'OptionSet',
+          columns: Array.from(optionMap.values()),
+        })
+      }
     }
 
-    const getRecordCurrentStage = (id: any) => {
-        const rec = records.find(r => r.id === id)
-        return rec ? { id, stageName: rec.stageName ?? '' } : null
-    }
+    return optionViews
+  }
 
-    return {
-        updateRecord,
-        getBusinessProcessFlows,
-        getOptionSets,
-        getRecordCurrentStage,
-        records,
-    }
+  const getRecordCurrentStage = (id: any) => {
+    if (!stepField) return null
+    const rec = records.find((r) => r.id === id)
+    const step = rec?.[stepField]?.toString().trim() ?? ''
+    return rec ? { id, stageName: step } : null
+  }
+
+  return {
+    records,
+    updateRecord,
+    getBusinessProcessFlows,
+    getOptionSets,
+    getRecordCurrentStage,
+  }
 }

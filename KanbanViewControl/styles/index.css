@@ -292,6 +292,23 @@ body {
   border: 1px solid #dedede;
 }
 
+.card-info {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.card-info-label {
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.card-info-value {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 @supports not selector(::-webkit-scrollbar) {
   .cards-wrapper {
       scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
