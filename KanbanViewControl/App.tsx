@@ -29,6 +29,7 @@ const App = ({ context, notificationPosition }: IProps) => {
   const [activeViewEntity, setActiveViewEntity] = useState<
     ViewEntity | undefined
   >();
+  const stepFieldRaw = context.parameters.stepField?.raw as string | undefined;
 
   const { records, getOptionSets, getBusinessProcessFlows } =
     useCollection(context);

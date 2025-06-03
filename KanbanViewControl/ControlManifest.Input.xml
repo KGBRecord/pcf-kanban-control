@@ -32,6 +32,13 @@
       usage="input" 
       required="false"
     />
+    <property 
+      name="stepField" 
+      display-name-key="Default View By" 
+      of-type="SingleLine.Text" 
+      usage="input" 
+      required="false"
+    />
 
     <property 
       name="hideViewBy" 

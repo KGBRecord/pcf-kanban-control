@@ -13,8 +13,6 @@ interface Column {
 
 export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
     const raw = context.parameters.collection?.raw as string | undefined
-    // console.log(raw);
-    // console.log(context.parameters.bpfStepsOptionsOrder?.raw as string | undefined);
     
     const records: any[] = useMemo(() => {
         if (isNullOrEmpty(raw)) return []
