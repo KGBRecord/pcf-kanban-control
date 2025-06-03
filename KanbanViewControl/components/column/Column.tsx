@@ -8,6 +8,8 @@ import NoResults from "../container/no-results";
 import { getItemStyle, getListStyle } from "../../lib/card-drag";
 
 const Column = ({ column }: { column: ColumnItem }) => {
+  console.log(column.cards);
+  
   return (
     <div
       className="column-container"
