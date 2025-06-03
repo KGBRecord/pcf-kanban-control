@@ -12,15 +12,22 @@ interface Column {
 }
 
 export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
-  const raw = context.parameters.collection?.raw as string | undefined
+  let raw = context.parameters.collection?.raw as string | undefined
   const stepField = context.parameters.stepField?.raw as string | undefined
-  const orderCfgRaw = context.parameters.bpfStepsOptionsOrder?.raw as string | undefined
+  let orderCfgRaw = context.parameters.bpfStepsOptionsOrder?.raw as string | undefined
+
+  const replaceAll = (str: string, search: string, replacement: string) => {
+    return str.split(search).join(replacement)
+  }
 
   // ✅ Parse collection (an toàn, không replace)
   const records: any[] = useMemo(() => {
     if (typeof raw !== 'string' || raw.trim() === '') return []
     try {
-      const parsed = JSON.parse(raw)
+      if (raw.includes(`\\"`)){
+        raw = JSON.parse(replaceAll(raw, '\\"', '"'))
+      }
+      const parsed = JSON.parse(raw||"[]")
       return Array.isArray(parsed) ? parsed : []
     } catch (err) {
       console.error('❌ Failed to parse collection:', err)
@@ -33,7 +40,10 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
     if (!stepField || typeof orderCfgRaw !== 'string' || orderCfgRaw.trim() === '') return []
 
     try {
-      const parsed = JSON.parse(orderCfgRaw)
+      if (orderCfgRaw.includes(`\\"`)){
+        orderCfgRaw = JSON.parse(replaceAll(orderCfgRaw, '\\"', '"'))
+      }
+      const parsed = JSON.parse(orderCfgRaw || "[]")
       if (!Array.isArray(parsed)) return []
 
       const validStepValues = new Set(
