@@ -1,44 +1,16 @@
-import { IInputs } from "../generated/ManifestTypes";
-import { isNullOrEmpty } from "../lib/utils";
+import { IInputs } from '../generated/ManifestTypes'
 
-const popupOtions = {
-    height: {value: 85, unit:"%"},
-    width: {value: 90, unit:"%"}, 
-    target: 2,  
-    position: 1
-}
+/**
+ * In a Canvas-only version we no longer have Dataverse pages to
+ * open.  These helpers therefore become safe no-op stubs that keep
+ * the existing API surface (so the rest of the code compiles).
+ */
+export const useNavigation = (_context: ComponentFramework.Context<IInputs>) => {
+  /** No-op – return resolved promise so caller can await safely */
+  const openForm = async (_entityName?: string, _id?: string): Promise<void> =>
+    Promise.resolve()
 
-export const useNavigation = (context: ComponentFramework.Context<IInputs>) => {
-    const { dataset } = context.parameters;
+  const createNewRecord = async (): Promise<void> => Promise.resolve()
 
-    const openForm = async (entityName: string, id?: string): Promise<void> => {
-        const pageInput = {
-            entityName: entityName,
-            entityId: id,
-            pageType: "entityrecord"
-        }
-
-        //@ts-expect-error - Method does not exist in PCF SDK however it should be use to maintain control state alive
-        await context.navigation.navigateTo(pageInput, popupOtions);
-    }
-
-    const createNewRecord = async (field?: string, column?: string): Promise<void> => {
-        const pageInput = {
-            entityName: dataset.getTargetEntityType(),
-            pageType: "entityrecord",
-            data : {}
-        }
-
-        if(!isNullOrEmpty(field) && !isNullOrEmpty(column)) {
-            pageInput.data = { [field as string]: column }
-        }
-
-        //@ts-expect-error - Method does not exist in PCF SDK however it should be use to maintain control state alive
-        await context.navigation.navigateTo(pageInput, popupOtions);
-    }
-
-    return {
-        openForm,
-        createNewRecord
-    }
+  return { openForm, createNewRecord }
 }

@@ -17,3 +17,5 @@
 *.binlog
 
 /.vscode
+
+.DS_Store
