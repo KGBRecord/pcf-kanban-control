@@ -33,7 +33,11 @@ export const useDnD = (
     const itemId = result.draggableId
     const sourceColumn = columns.find(c => c.id === result.source.droppableId)
     const destinationColumn = columns.find(c => c.id === result.destination?.droppableId)
-    const sourceCard = sourceColumn?.cards?.find(i => i.id === itemId)
+
+
+
+    const sourceCard = sourceColumn?.cards?.find(i => String(i.id) === itemId)
+
 
     let movedCards = await moveCard(columns, sourceCard, result)
     setColumns(movedCards ?? [])
@@ -46,16 +50,27 @@ export const useDnD = (
 
     if (!response) {
       const oldVal = sourceColumn?.title
-      ;(sourceCard![Object.keys(record.update)[0]] as CardInfo).value = oldVal as string
+        ; (sourceCard![Object.keys(record.update)[0]] as CardInfo).value = oldVal as string
       movedCards = await moveCard(columns, sourceCard, result)
     } else {
       const newVal = destinationColumn?.title
-      ;(sourceCard![Object.keys(record.update)[0]] as CardInfo).value = newVal as string
+
+      const fieldKey = Object.keys(record.update)[0]
+
+      if (sourceCard) {
+        let cardField = sourceCard[fieldKey] as string
+
+
+        cardField = newVal as string
+
+      } else {
+        console.warn('⚠️ sourceCard là undefined')
+      }
       movedCards = await moveCard(columns, sourceCard, result)
 
-      // 🔥 Gán giá trị output và trigger notify
-      setDragResult(`Moved to: ${newVal}`)
+      setDragResult(`${sourceCard?.id}#${newVal}`)
       notifyOutputChanged()
+
     }
 
     setColumns(movedCards ?? [])

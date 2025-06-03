@@ -14,8 +14,6 @@ interface ICardInfoProps {
 }
 
 const CardDetails = ({ info }: ICardInfoProps) => {
-  console.log(info);
-  
   const { context } = useContext(BoardContext);
   const { openForm } = useNavigation(context);
 
@@ -30,7 +28,6 @@ const CardDetails = ({ info }: ICardInfoProps) => {
     
     return !value || value === "Unallocated" ? undefined : value;
   };
-  // console.log(info.label);
   
   return info.label ? (
     <div
