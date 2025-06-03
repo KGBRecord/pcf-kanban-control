@@ -69,8 +69,7 @@ export const useDnD = (
       movedCards = await moveCard(columns, sourceCard, result)
 
       setDragResult(`${sourceCard?.id}#${newVal}`)
-      notifyOutputChanged()
-
+      // notifyOutputChanged()
     }
 
     setColumns(movedCards ?? [])

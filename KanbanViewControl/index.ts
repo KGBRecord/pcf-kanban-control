@@ -32,6 +32,7 @@ export class KanbanViewControl implements ComponentFramework.ReactControl<IInput
     }
 
     public getOutputs(): IOutputs {
+        console.log("🚀 Output sent:", this._dragResult)
         return {
             dragResult: this._dragResult // 🔥 Trả ra output
         };
