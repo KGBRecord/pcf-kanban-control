@@ -1,36 +1,8 @@
 .kanban-container {
-  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
 }
-
-.kanban-container .column-header-container,
-.kanban-container .column-header,
-.kanban-container .column-header-sum,
-.kanban-container .column-counter,
-.kanban-container .column-actions,
-.kanban-container .cards-wrapper,
-.kanban-container .card-container,
-.kanban-container .card-header-container,
-.kanban-container .card-tag,
-.kanban-container .card-title,
-.kanban-container .card-body,
-.kanban-container .card-info,
-.kanban-container .card-info-label,
-.kanban-container .card-info-value,
-.kanban-container .card-info-container,
-.kanban-container .card-footer,
-.kanban-container .card-text,
-.kanban-container .lookup-persona-name,
-.kanban-container .kanban-commandar-bar,
-.kanban-container .kanban-dropdown,
-.kanban-container .kanban-dropdown .ms-Dropdown-title,
-.kanban-container .kanban-dropdown .ms-Dropdown .is-open,
-.kanban-container .kanban-dropdown .ms-Dropdown-container,
-.kanban-container .kanban-dropdown .ms-Dropdown-label,
-.kanban-container .action-button,
-.kanban-container .loading-container,
-.kanban-container .personaContainer,
-.kanban-container .user-badge {
-  font-family: inherit;
+.kanban-container * {
+  font-family: inherit !important;
 }
 .main-container {
   display: flex;
@@ -345,6 +317,21 @@ body {
 .card-container,
 .column-header-container {
   box-sizing: border-box;
+}
+
+.column-counter {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  width: auto;
+  height: auto;
+  line-height: normal;
+  text-align: right;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 @supports not selector(::-webkit-scrollbar) {
