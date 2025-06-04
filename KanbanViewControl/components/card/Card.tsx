@@ -44,6 +44,7 @@ const Card = ({ item, triggerOnChange }: IProps) => {
         minWidth: 180,
         maxWidth: 500,
       }}
+       onClick={onCardClick}
     >
       <CardHeader>
         <Text className="card-title" nowrap>
@@ -61,14 +62,14 @@ const Card = ({ item, triggerOnChange }: IProps) => {
           ))}
         </CardDetailsList>
       </CardBody>
-      <CardFooter>
+      {/* <CardFooter>
         <IconButton
           iconName="ChevronRight"
           cursor="pointer"
           noBorder
           onClick={onCardClick}
         />
-      </CardFooter>
+      </CardFooter> */}
     </div>
   );
 };

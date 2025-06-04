@@ -22,16 +22,16 @@ const ColumnHeader = ({ column }: IProps) => {
   const count = useMemo(() => column.cards?.length ?? 0, [column.cards]);
 
   return (
-    <div className="column-header-container">
-      <div
-        className="column-header"
-        style={{
-          backgroundColor: column.color ?? "#eeeeee",
-          padding: 8,
-          borderRadius: 4,
-          width: cardWidth,
-        }}
-      >
+    <div
+      className="column-header-container"
+      style={{
+        backgroundColor: column.color ?? "#eeeeee",
+        padding: 8,
+        borderRadius: 4,
+        width: cardWidth,
+      }}
+    >
+      <div className="column-header">
         <Text variant="xLarge" nowrap>
           {column.title}
         </Text>

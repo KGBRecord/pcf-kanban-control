@@ -313,6 +313,11 @@ body {
   word-break: break-word;
 }
 
+.card-container,
+.column-header-container {
+  box-sizing: border-box;
+}
+
 @supports not selector(::-webkit-scrollbar) {
   .cards-wrapper {
       scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
