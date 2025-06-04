@@ -32,11 +32,11 @@ const ColumnHeader = ({ column }: IProps) => {
               {count}
             </Text>
           )}
-          <IconButton
+          {/* <IconButton
             iconName="Add"
             onClick={() => onAddNewRecord(column.id as string)}
             noBorder
-          />
+          /> */}
         </div>
       </div>
     </div>

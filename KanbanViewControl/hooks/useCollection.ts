@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { IInputs } from '../generated/ManifestTypes'
-import { isNullOrEmpty } from '../lib/utils'
 
 interface Column {
   id: string
@@ -20,14 +19,13 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
     return str.split(search).join(replacement)
   }
 
-  // ✅ Parse collection (an toàn, không replace)
   const records: any[] = useMemo(() => {
     if (typeof raw !== 'string' || raw.trim() === '') return []
     try {
-      if (raw.includes(`\\"`)){
+      if (raw.includes(`\\"`)) {
         raw = JSON.parse(replaceAll(raw, '\\"', '"'))
       }
-      const parsed = JSON.parse(raw||"[]")
+      const parsed = JSON.parse(raw || "[]")
       return Array.isArray(parsed) ? parsed : []
     } catch (err) {
       console.error('❌ Failed to parse collection:', err)
@@ -35,33 +33,27 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
     }
   }, [raw])
 
-  // ✅ Parse step order config
   const stepOrder: { id: string; order: number }[] = useMemo(() => {
     if (!stepField || typeof orderCfgRaw !== 'string' || orderCfgRaw.trim() === '') return []
-
     try {
-      if (orderCfgRaw.includes(`\\"`)){
+      if (orderCfgRaw.includes(`\\"`)) {
         orderCfgRaw = JSON.parse(replaceAll(orderCfgRaw, '\\"', '"'))
       }
       const parsed = JSON.parse(orderCfgRaw || "[]")
       if (!Array.isArray(parsed)) return []
 
-      const validStepValues = new Set(
-        records.map((r) => r?.[stepField]?.toString().trim()).filter(Boolean)
-      )
-
+      // ✅ Không lọc theo records
       return parsed.filter(
         (item: any) =>
           item &&
           typeof item.id === 'string' &&
-          typeof item.order === 'number' &&
-          validStepValues.has(item.id)
+          typeof item.order === 'number'
       )
     } catch (err) {
       console.error('❌ Failed to parse stepOrder:', err)
       return []
     }
-  }, [orderCfgRaw, stepField, records])
+  }, [orderCfgRaw, stepField])
 
   const updateRecord = async (record: any) => Promise.resolve(record)
 
@@ -70,18 +62,30 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
 
     const columnMap = new Map<string, Column>()
 
+    // ✅ Bước 1: Tạo column trống từ stepOrder trước
+    for (const step of stepOrder) {
+      columnMap.set(step.id, {
+        id: step.id,
+        key: step.id,
+        label: step.id,
+        title: step.id,
+        order: step.order,
+        records: [],
+      })
+    }
+
+    // ✅ Bước 2: Duyệt records và nhét vào đúng column
     for (const rec of records) {
       const stepValue = rec?.[stepField]?.toString().trim() ?? ''
       if (!stepValue) continue
 
       if (!columnMap.has(stepValue)) {
-        const cfg = stepOrder.find((s) => s.id === stepValue)
         columnMap.set(stepValue, {
           id: stepValue,
           key: stepValue,
           label: stepValue,
           title: stepValue,
-          order: cfg?.order ?? -1,
+          order: 999, // fallback nếu không có trong stepOrder
           records: [],
         })
       }
@@ -91,8 +95,6 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
         stageName: stepValue,
       })
     }
-
-    if (columnMap.size === 0) return []
 
     const columns = Array.from(columnMap.values()).sort((a, b) => {
       const aOrdered = a.order >= 0
