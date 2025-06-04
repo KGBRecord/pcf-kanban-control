@@ -12,9 +12,10 @@ import { useNavigation } from "../../hooks/useNavigation";
 
 interface IProps {
   item: CardItem;
+  triggerOnChange: (val: string) => void; 
 }
 
-const Card = ({ item }: IProps) => {
+const Card = ({ item, triggerOnChange }: IProps) => {
   const { context } = useContext(BoardContext);
   const { openForm } = useNavigation(context);
 
@@ -23,7 +24,8 @@ const Card = ({ item }: IProps) => {
     cardWidthRaw && !isNaN(Number(cardWidthRaw)) ? Number(cardWidthRaw) : 280;
 
   const onCardClick = () => {
-    openForm(undefined, item.id.toString());
+    triggerOnChange(`OPEN#${item.id.toString()}`);
+    // openForm(undefined, item.id.toString());
   };
 
   const cardDetails = useMemo(

@@ -17,11 +17,11 @@ interface IProps {
     | "bottom-center"
     | "bottom-left"
     | "bottom-right";
-  setDragResult: (val: string) => void; // ✅ thêm mới
+  triggerOnChange: (val: string) => void; // ✅ thêm mới
   notifyOutputChanged: () => void;      // ✅ thêm mới
 }
 
-const App = ({ context, notificationPosition, setDragResult, notifyOutputChanged }: IProps) => {
+const App = ({ context, notificationPosition, triggerOnChange, notifyOutputChanged }: IProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [columns, setColumns] = useState<ColumnItem[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<string | undefined>();
@@ -101,7 +101,7 @@ const App = ({ context, notificationPosition, setDragResult, notifyOutputChanged
     >
       <Board
         context={context}
-        setDragResult={setDragResult} // ✅ truyền xuống
+        triggerOnChange={triggerOnChange} // ✅ truyền xuống
         notifyOutputChanged={notifyOutputChanged}
       />
       <Toaster

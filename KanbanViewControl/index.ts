@@ -23,8 +23,8 @@ export class KanbanViewControl implements ComponentFramework.ReactControl<IInput
         return React.createElement(App, {
             context: this._context,
             notificationPosition: context.parameters.notificationPosition?.raw,
-            setDragResult: (val: string) => {
-                console.log("try to set drag result");
+            triggerOnChange: (val: string) => {
+                console.log("Trigger on change", val);
                 this._dragResult = val;
                 this.notifyOutputChanged();
             },

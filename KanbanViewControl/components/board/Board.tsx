@@ -11,12 +11,12 @@ import { useDnD } from "../../hooks/useDnD";
 
 const Board = (props: any) => {
   const { context, columns } = useContext(BoardContext);
-  // const [dragResult, setDragResult] = useState<string>("");
+  // const [dragResult, triggerOnChange] = useState<string>("");
 
   const stepField = context.parameters.stepField?.raw;
 
-  // Truyền setDragResult và notifyOutputChanged vào useDnD
-  const { onDragEnd } = useDnD(columns, props.setDragResult, props.notifyOutputChanged);
+  // Truyền triggerOnChange và notifyOutputChanged vào useDnD
+  const { onDragEnd } = useDnD(columns, props.triggerOnChange, props.notifyOutputChanged);
 
   const handleCardDrag = async (
     result: DropResult,
@@ -49,7 +49,7 @@ const Board = (props: any) => {
         >
           <DragDropContext onDragEnd={handleCardDrag}>
             {columns.map((col) => (
-              <Column key={col.id} column={col} />
+              <Column key={col.id} column={col} triggerOnChange={props.triggerOnChange} />
             ))}
           </DragDropContext>
         </div>

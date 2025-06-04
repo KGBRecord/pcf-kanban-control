@@ -11,7 +11,7 @@ export type ColumnId = ColumnItem[][number]['id']
 
 export const useDnD = (
   columns: ColumnItem[],
-  setDragResult: (val: string) => void,
+  triggerOnChange: (val: string) => void,
   notifyOutputChanged: () => void,
 ) => {
   const { context, activeView, setColumns } = useContext(BoardContext)
@@ -68,7 +68,7 @@ export const useDnD = (
       }
       movedCards = await moveCard(columns, sourceCard, result)
 
-      setDragResult(`${sourceCard?.id}#${newVal}`)
+      triggerOnChange(`UPDATE#${sourceCard?.id}#${newVal}`)
       // notifyOutputChanged()
     }
 

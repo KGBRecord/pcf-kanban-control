@@ -7,7 +7,7 @@ import { isNullOrEmpty } from "../../lib/utils";
 import NoResults from "../container/no-results";
 import { getItemStyle, getListStyle } from "../../lib/card-drag";
 
-const Column = ({ column }: { column: ColumnItem }) => {
+const Column = ({ column, triggerOnChange }: { column: ColumnItem, triggerOnChange: (val: string) => void }) => {
   return (
     <div
       className="column-container"
@@ -45,7 +45,7 @@ const Column = ({ column }: { column: ColumnItem }) => {
                         provided.draggableProps.style
                       )}
                     >
-                      <Card key={item.id} item={item} />
+                      <Card key={item.id} item={item} triggerOnChange={triggerOnChange} />
                     </div>
                   )}
                 </Draggable>
