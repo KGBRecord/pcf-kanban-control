@@ -28,7 +28,7 @@
   -->
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.PowerApps.MSBuild.Solution" Version="1.0.6" />
+    <PackageReference Include="Microsoft.PowerApps.MSBuild.Solution" Version="1.0.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
