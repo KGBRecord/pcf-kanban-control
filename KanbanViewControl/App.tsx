@@ -17,31 +17,38 @@ interface IProps {
     | "bottom-center"
     | "bottom-left"
     | "bottom-right";
-  triggerOnChange: (val: string) => void; // ✅ thêm mới
-  notifyOutputChanged: () => void;      // ✅ thêm mới
+  triggerOnChange: (val: string) => void; 
+  notifyOutputChanged: () => void; 
 }
 
-const App = ({ context, notificationPosition, triggerOnChange, notifyOutputChanged }: IProps) => {
+const App = ({
+  context,
+  notificationPosition,
+  triggerOnChange,
+  notifyOutputChanged,
+}: IProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [columns, setColumns] = useState<ColumnItem[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<string | undefined>();
-  const [activeViewEntity, setActiveViewEntity] = useState<ViewEntity | undefined>();
+  const [activeViewEntity, setActiveViewEntity] = useState<
+    ViewEntity | undefined
+  >();
 
   const { records, getBusinessProcessFlows } = useCollection(context);
 
+  const width = context.mode.allocatedWidth;
+  const height = context.mode.allocatedHeight;
+  console.log(width, height);
+  
+
   const buildCards = (view: any) => {
     return records.map((rec: any) => {
-      const step = view.records?.find((r: any) => r.id === rec.id)?.stageName ?? "";
+      const step =
+        view.records?.find((r: any) => r.id === rec.id)?.stageName ?? "";
       return {
         id: rec.id,
         column: step,
         ...rec,
-      };
-      const flat = flattenRecord(rec);
-      return {
-        ...flat,
-        id: rec.id,
-        column: step,
       };
     });
   };
@@ -100,7 +107,7 @@ const App = ({ context, notificationPosition, triggerOnChange, notifyOutputChang
     >
       <Board
         context={context}
-        triggerOnChange={triggerOnChange} // ✅ truyền xuống
+        triggerOnChange={triggerOnChange} 
         notifyOutputChanged={notifyOutputChanged}
       />
       <Toaster

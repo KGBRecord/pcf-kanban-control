@@ -5,7 +5,7 @@ import App from "./App";
 export class KanbanViewControl implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private _context!: ComponentFramework.Context<IInputs>;
     private notifyOutputChanged!: () => void;
-    private _dragResult: string = ""; // 🔥 Biến lưu output
+    private _dragResult: string = ""; 
 
     public init(
         context: ComponentFramework.Context<IInputs>,
@@ -35,7 +35,7 @@ export class KanbanViewControl implements ComponentFramework.ReactControl<IInput
     public getOutputs(): IOutputs {
         console.log("🚀 Output sent:", this._dragResult)
         return {
-            dragResult: this._dragResult // 🔥 Trả ra output
+            dragResult: this._dragResult 
         };
     }
 

@@ -43,7 +43,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
       const parsed = JSON.parse(orderCfgRaw || "[]")
       if (!Array.isArray(parsed)) return []
 
-      // ✅ Không lọc theo records
+      
       return parsed.filter(
         (item: any) =>
           item &&
@@ -63,7 +63,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
 
     const columnMap = new Map<string, Column>()
 
-    // ✅ Bước 1: Tạo column trống từ stepOrder trước
+    
     for (const step of stepOrder) {
       columnMap.set(step.id, {
         id: step.id,
@@ -76,7 +76,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
       })
     }
 
-    // ✅ Bước 2: Duyệt records và nhét vào đúng column
+    
     for (const rec of records) {
       const stepValue = rec?.[stepField]?.toString().trim() ?? ''
       if (!stepValue) continue
@@ -87,7 +87,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
           key: stepValue,
           label: stepValue,
           title: stepValue,
-          order: 999, // fallback nếu không có trong stepOrder
+          order: 999, 
           records: [],
           color: undefined,
         })

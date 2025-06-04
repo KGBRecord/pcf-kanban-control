@@ -25,7 +25,7 @@ const Card = ({ item, triggerOnChange }: IProps) => {
 
   const onCardClick = () => {
     triggerOnChange(`OPEN#${item.id.toString()}`);
-    // openForm(undefined, item.id.toString());
+    
   };
 
   const cardDetails = useMemo(
