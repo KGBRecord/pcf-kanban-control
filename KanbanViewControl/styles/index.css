@@ -39,6 +39,7 @@ div:has(.main-container),
   gap: 32px;
   padding-bottom: 16px;
   overflow-x: auto;
+  height: 100%;
 }
 
 /** Container */

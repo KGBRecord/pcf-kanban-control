@@ -1,31 +1,31 @@
-import * as React from "react";
-import { useEffect, useState } from "react";
-import { IInputs } from "./generated/ManifestTypes";
-import { Board } from "./components";
-import { BoardContext } from "./context/board-context";
-import { ColumnItem, ViewEntity } from "./interfaces";
-import Loading from "./components/container/loading";
-import { Toaster } from "react-hot-toast";
-import { useCollection } from "./hooks/useCollection";
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { IInputs } from './generated/ManifestTypes';
+import { Board } from './components';
+import { BoardContext } from './context/board-context';
+import { ColumnItem, ViewEntity } from './interfaces';
+import Loading from './components/container/loading';
+import { Toaster } from 'react-hot-toast';
+import { useCollection } from './hooks/useCollection';
 
 interface IProps {
   context: ComponentFramework.Context<IInputs>;
   notificationPosition:
-    | "top-center"
-    | "top-left"
-    | "top-right"
-    | "bottom-center"
-    | "bottom-left"
-    | "bottom-right";
-  triggerOnChange: (val: string) => void; 
-  notifyOutputChanged: () => void; 
+    | 'top-center'
+    | 'top-left'
+    | 'top-right'
+    | 'bottom-center'
+    | 'bottom-left'
+    | 'bottom-right';
+  triggerOnChange: (val: string) => void;
+  notifyOutputChanged: () => void;
 }
 
 const App = ({
   context,
   notificationPosition,
   triggerOnChange,
-  notifyOutputChanged,
+  notifyOutputChanged
 }: IProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [columns, setColumns] = useState<ColumnItem[]>([]);
@@ -39,16 +39,15 @@ const App = ({
   const width = context.mode.allocatedWidth;
   const height = context.mode.allocatedHeight;
   console.log(width, height);
-  
 
   const buildCards = (view: any) => {
     return records.map((rec: any) => {
       const step =
-        view.records?.find((r: any) => r.id === rec.id)?.stageName ?? "";
+        view.records?.find((r: any) => r.id === rec.id)?.stageName ?? '';
       return {
         id: rec.id,
         column: step,
-        ...rec,
+        ...rec
       };
     });
   };
@@ -57,9 +56,9 @@ const App = ({
     const result: any = {};
     for (const key in rec) {
       const val = rec[key];
-      if (val && typeof val === "object" && "label" in val) {
+      if (val && typeof val === 'object' && 'label' in val) {
         result[key] = val.label;
-      } else if (val && typeof val === "object" && "value" in val) {
+      } else if (val && typeof val === 'object' && 'value' in val) {
         result[key] = val.value;
       } else {
         result[key] = val;
@@ -78,14 +77,15 @@ const App = ({
     const cards = buildCards(bpfView);
     const cols = bpfView.columns.map((col) => ({
       ...col,
-      cards: cards.filter((c) => c.column === col.id),
+      cards: cards.filter((c) => c.column === col.id)
     }));
     setColumns(cols);
     setIsLoading(false);
   };
 
   useEffect(() => {
-    setSelectedEntity("collection");
+    console.log(context);
+    setSelectedEntity('collection');
     setupColumns();
   }, [records]);
 
@@ -102,12 +102,12 @@ const App = ({
         setColumns,
         activeViewEntity,
         setActiveViewEntity,
-        selectedEntity,
+        selectedEntity
       }}
     >
       <Board
         context={context}
-        triggerOnChange={triggerOnChange} 
+        triggerOnChange={triggerOnChange}
         notifyOutputChanged={notifyOutputChanged}
       />
       <Toaster
@@ -115,7 +115,7 @@ const App = ({
         reverseOrder={false}
         toastOptions={{
           style: { borderRadius: 4, padding: 16 },
-          duration: 5000,
+          duration: 5000
         }}
       />
     </BoardContext.Provider>
