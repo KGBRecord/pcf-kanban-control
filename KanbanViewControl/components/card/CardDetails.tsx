@@ -35,7 +35,7 @@ const CardDetails = ({ info }: ICardInfoProps) => {
       style={{
         display: "flex",
         flexDirection: "column",
-        width: "100%", // chiếm trọn chiều ngang card
+        width: "100%", 
       }}
     >
       <Text
@@ -68,7 +68,7 @@ const CardDetailsList = ({ children }: IProps) => {
       style={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start", // đảm bảo không bị stretch toàn dòng
+        alignItems: "flex-start", 
         gap: 8,
       }}
     >

@@ -25,7 +25,7 @@ const Card = ({ item, triggerOnChange }: IProps) => {
 
   const onCardClick = () => {
     triggerOnChange(`OPEN#${item.id.toString()}`);
-    // openForm(undefined, item.id.toString());
+    
   };
 
   const cardDetails = useMemo(
@@ -44,6 +44,7 @@ const Card = ({ item, triggerOnChange }: IProps) => {
         minWidth: 180,
         maxWidth: 500,
       }}
+       onClick={onCardClick}
     >
       <CardHeader>
         <Text className="card-title" nowrap>
@@ -61,14 +62,14 @@ const Card = ({ item, triggerOnChange }: IProps) => {
           ))}
         </CardDetailsList>
       </CardBody>
-      <CardFooter>
+      {/* <CardFooter>
         <IconButton
           iconName="ChevronRight"
           cursor="pointer"
           noBorder
           onClick={onCardClick}
         />
-      </CardFooter>
+      </CardFooter> */}
     </div>
   );
 };
