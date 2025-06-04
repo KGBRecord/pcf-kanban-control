@@ -8,8 +8,14 @@
     description-key="PowerApps Component Framework control (PCF) that allows users to see records in a kanban view format." 
     control-type="virtual"
   >
-    <data-set name="dataset" display-name-key="Dataset" />
-
+    <!-- <data-set name="dataset" display-name-key="Dataset" /> -->
+    <property
+      name="collection"
+      display-name-key="Source Collection (JSON)"
+      description-key="Use JSON(yourCollection) in Power Fx and bind the result here."
+      of-type="Multiple"
+      usage="input"
+      required="true" />
     <property 
       name="bpfStepsOptionsOrder" 
       display-name-key="Business Process Flow Step Order" 
@@ -18,19 +24,17 @@
       usage="input" 
       required="false"
     />
-
     <property 
-      name="defaultView" 
+      name="stepField" 
       display-name-key="Default View By" 
-      of-type="SingleLine.TextArea" 
+      of-type="SingleLine.Text" 
       usage="input" 
       required="false"
     />
-
     <property 
-      name="hideViewBy" 
-      display-name-key="Hide View By if default View By set?" 
-      of-type="TwoOptions" 
+      name="cardWidth" 
+      display-name-key="Default View By" 
+      of-type="SingleLine.Text" 
       usage="input" 
       required="false"
     />
@@ -51,6 +55,8 @@
       <value name="bottomStart" display-name-key="Bottom Start" description-key="">bottom-left</value>
       <value name="bottomEnd" display-name-key="Bottom End" description-key="">bottom-right</value>
     </property>
+
+    <property name="dragResult" display-name-key="Drag Result" of-type="SingleLine.Text" usage="output" />
 
     <resources>
       <code path="index.ts" order="1"/>

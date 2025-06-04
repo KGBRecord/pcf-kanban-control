@@ -1,55 +1,61 @@
-import * as React from 'react';
-import { useContext, useMemo } from 'react';
-import { CommandBar, Column } from '..';
-import { DragDropContext, DropResult, ResponderProvided } from '@hello-pangea/dnd';
-import { BoardContext } from '../../context/board-context';
-import { useDnD } from '../../hooks/useDnD';
-import { pluralizedLogicalNames } from '../../lib/utils';
+import * as React from "react";
+import { useContext, useState } from "react";
+import {
+  DragDropContext,
+  DropResult,
+  ResponderProvided,
+} from "@hello-pangea/dnd";
+import { Column } from "..";
+import { BoardContext } from "../../context/board-context";
+import { useDnD } from "../../hooks/useDnD";
 
-const Board = () => {
-  const { context, columns, selectedEntity, activeView} = useContext(BoardContext);
-  const { onDragEnd } = useDnD(columns);
+const Board = (props: any) => {
+  const { context, columns } = useContext(BoardContext);
+  // const [dragResult, triggerOnChange] = useState<string>("");
 
-  const handleCardDrag = async (result: DropResult, _: ResponderProvided) => {
-    const field = activeView?.uniqueName
-    const columnName = activeView?.columns?.find(column => column.id == result.destination?.droppableId)?.title
-    const logicalName = pluralizedLogicalNames(selectedEntity as string)
+  const stepField = context.parameters.stepField?.raw;
+
+  // Truyền triggerOnChange và notifyOutputChanged vào useDnD
+  const { onDragEnd } = useDnD(columns, props.triggerOnChange, props.notifyOutputChanged);
+
+  const handleCardDrag = async (
+    result: DropResult,
+    _resp: ResponderProvided
+  ) => {
+    if (!result.destination || !stepField) return;
+
+    const destId = result.destination.droppableId;
+
     const record = {
-      update: {
-        [field as string]: result.destination?.droppableId == "unallocated" ? null : result.destination?.droppableId
-      },
-      logicalName: logicalName,
-      entityName: selectedEntity,
+      update: { [stepField]: destId === "unallocated" ? null : destId },
       id: result.draggableId,
-      columnName
-    }
+      columnName: destId,
+    };
 
     await onDragEnd(result, record);
-    context.parameters.dataset.refresh();
-  }
-
-  const hideViews = useMemo(() => {
-    return context.parameters.hideViewBy?.raw
-  },[context.parameters.hideViewBy])
+  };
 
   return (
-    <div className='main-container'>
-      {
-        !hideViews && <CommandBar />
-      }
-      <div className='kanban-container'>
-          <div className='columns-wrapper'>
-            <DragDropContext onDragEnd={handleCardDrag}>
-              {
-                columns && columns.map((column) => (
-                  <Column key={column.id} column={column} />
-                ))
-              }
-            </DragDropContext>
-          </div>
+    <div className="main-container">
+      <div className="kanban-container">
+        <div
+          className="columns-wrapper"
+          style={{
+            display: "flex",
+            gap: 12,
+            alignItems: "flex-start",
+            overflowX: "auto",
+          }}
+        >
+          <DragDropContext onDragEnd={handleCardDrag}>
+            {columns.map((col) => (
+              <Column key={col.id} column={col} triggerOnChange={props.triggerOnChange} />
+            ))}
+          </DragDropContext>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Board;

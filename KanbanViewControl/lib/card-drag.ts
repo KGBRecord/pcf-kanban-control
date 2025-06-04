@@ -7,7 +7,7 @@ export const moveCard = async (columns: ColumnItem[], sourceCard: CardItem | und
   const itemId = result.draggableId;
   const sourceColumn = columns.find(c => c.id == result.source.droppableId);
   const destinationColumn = columns.find(c => c.id == result.destination?.droppableId);
-  const sourceColumnCardIndex = sourceColumn?.cards?.findIndex(i => i.id === itemId);
+  const sourceColumnCardIndex = sourceColumn?.cards?.findIndex(i => String(i.id) === itemId);
 
   if (sourceColumnCardIndex !== undefined && sourceColumnCardIndex !== -1 && sourceCard) {
     copy = copy.map(col => {

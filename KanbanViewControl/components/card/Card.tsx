@@ -1,51 +1,76 @@
 import * as React from "react";
+import { useContext, useMemo } from "react";
 import { Text } from "@fluentui/react/lib/Text";
 import CardHeader from "./CardHeader";
-import CardFooter from "./CardFooter";
 import CardBody from "./CardBody";
-import { CardInfo, CardItem } from "../../interfaces";
-import { CardDetails, CardDetailsList } from "./CardDetails";
-import { useMemo } from "react";
+import CardFooter from "./CardFooter";
 import IconButton from "../button/IconButton";
-import { useNavigation } from "../../hooks/useNavigation";
+import { CardItem, CardInfo } from "../../interfaces";
+import { CardDetails, CardDetailsList } from "./CardDetails";
 import { BoardContext } from "../../context/board-context";
-import { useContext } from "react";
+import { useNavigation } from "../../hooks/useNavigation";
 
 interface IProps {
-  item: CardItem,
+  item: CardItem;
+  triggerOnChange: (val: string) => void; 
 }
 
-const Card = ({ item }: IProps) => {
+const Card = ({ item, triggerOnChange }: IProps) => {
   const { context } = useContext(BoardContext);
   const { openForm } = useNavigation(context);
 
+  const cardWidthRaw = context.parameters.cardWidth?.raw;
+  const cardWidth =
+    cardWidthRaw && !isNaN(Number(cardWidthRaw)) ? Number(cardWidthRaw) : 280;
+
   const onCardClick = () => {
-      openForm(context.parameters.dataset.getTargetEntityType(), item.id.toString())  
-  }
+    triggerOnChange(`OPEN#${item.id.toString()}`);
+    // openForm(undefined, item.id.toString());
+  };
 
-  const cardDetails = useMemo(() => {
-    return Object.entries(item)?.filter(i => i[0] != 'title' && i[0] != 'tag' && i[0] != 'id' && i[0] != 'column')
-  }, [item])
+  const cardDetails = useMemo(
+    () =>
+      Object.entries(item).filter(
+        (k) => !["title", "tag", "id", "column"].includes(k[0])
+      ),
+    [item]
+  );
 
-  return ( 
-    <div className="card-container">
+  return (
+    <div
+      className="card-container"
+      style={{
+        width: cardWidth,
+        minWidth: 180,
+        maxWidth: 500,
+      }}
+    >
       <CardHeader>
-        <Text className="card-title" nowrap>{item?.title?.value}</Text>
+        <Text className="card-title" nowrap>
+          {item?.title?.value ?? item?.title}
+        </Text>
       </CardHeader>
       <CardBody>
         <CardDetailsList>
-          {
-            cardDetails?.map((info) => (
-              <CardDetails key={`${info[0]}-${item.id}`} id={item.id} info={info[1] as CardInfo} />
-            ))
-          }
+          {cardDetails.map((info) => (
+            <CardDetails
+              key={`${info[0]}-${item.id}`}
+              id={item.id}
+              info={info[1] as CardInfo}
+            />
+          ))}
         </CardDetailsList>
       </CardBody>
       <CardFooter>
-        <IconButton iconName="ChevronRight" cursor="pointer" noBorder onClick={onCardClick} />
+        <IconButton
+          iconName="ChevronRight"
+          cursor="pointer"
+          noBorder
+          onClick={onCardClick}
+        />
       </CardFooter>
     </div>
   );
-}
+};
 
 export default Card;
