@@ -4,7 +4,7 @@ import App from "./App";
 
 export class KanbanViewControl implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private _context!: ComponentFramework.Context<IInputs>;
-    private _notifyOutputChanged!: () => void;
+    private notifyOutputChanged!: () => void;
     private _dragResult: string = ""; // 🔥 Biến lưu output
 
     public init(
@@ -13,7 +13,7 @@ export class KanbanViewControl implements ComponentFramework.ReactControl<IInput
         _: ComponentFramework.Dictionary
     ): void {
         this._context = context;
-        this._notifyOutputChanged = notifyOutputChanged;
+        this.notifyOutputChanged = notifyOutputChanged;
         context.mode.trackContainerResize(true);
     }
 
@@ -24,10 +24,11 @@ export class KanbanViewControl implements ComponentFramework.ReactControl<IInput
             context: this._context,
             notificationPosition: context.parameters.notificationPosition?.raw,
             setDragResult: (val: string) => {
+                console.log("try to set drag result");
                 this._dragResult = val;
-                this._notifyOutputChanged();
+                this.notifyOutputChanged();
             },
-            notifyOutputChanged: this._notifyOutputChanged
+            notifyOutputChanged: this.notifyOutputChanged
         });
     }
 
