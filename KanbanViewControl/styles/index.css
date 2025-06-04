@@ -1,3 +1,13 @@
+.io-pane {
+  height: calc(100vh - 47px);
+  overflow-y: auto;
+}
+
+div:has(.main-container),
+.control-container > div {
+  height: 100%;
+}
+
 .kanban-container {
   font-family: 'Segoe UI', Tahoma, sans-serif;
 }
@@ -9,6 +19,7 @@
   width: 100%;
   flex-direction: column;
   overflow-x: auto;
+  height: 100%;
 }
 
 .kanban-container {
@@ -16,7 +27,7 @@
   flex-direction: column;
   position: relative;
   min-height: 400px;
-  max-height: 100vh;
+  height: 100%;
   background-color: #f8f8f8;
   padding: 16px;
 }
