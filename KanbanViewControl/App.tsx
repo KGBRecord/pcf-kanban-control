@@ -73,7 +73,6 @@ const App = ({ context, notificationPosition, triggerOnChange, notifyOutputChang
       ...col,
       cards: cards.filter((c) => c.column === col.id),
     }));
-
     setColumns(cols);
     setIsLoading(false);
   };

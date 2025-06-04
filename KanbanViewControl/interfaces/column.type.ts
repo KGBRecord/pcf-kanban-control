@@ -5,4 +5,5 @@ export interface ColumnItem {
   id: UniqueIdentifier,
   title: string,
   cards?: CardItem[]
+  color?: string;
 }

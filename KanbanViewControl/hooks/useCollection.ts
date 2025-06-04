@@ -8,6 +8,7 @@ interface Column {
   title: string
   order: number
   records: { id: any; stageName: string }[]
+  color?: string;
 }
 
 export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
@@ -33,7 +34,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
     }
   }, [raw])
 
-  const stepOrder: { id: string; order: number }[] = useMemo(() => {
+  const stepOrder: { id: string; order: number, color: string }[] = useMemo(() => {
     if (!stepField || typeof orderCfgRaw !== 'string' || orderCfgRaw.trim() === '') return []
     try {
       if (orderCfgRaw.includes(`\\"`)) {
@@ -71,6 +72,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
         title: step.id,
         order: step.order,
         records: [],
+        color: step.color,
       })
     }
 
@@ -87,6 +89,7 @@ export const useCollection = (context: ComponentFramework.Context<IInputs>) => {
           title: stepValue,
           order: 999, // fallback nếu không có trong stepOrder
           records: [],
+          color: undefined,
         })
       }
 
