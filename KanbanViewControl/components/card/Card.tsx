@@ -1,18 +1,16 @@
-import * as React from "react";
-import { useContext, useMemo } from "react";
-import { Text } from "@fluentui/react/lib/Text";
-import CardHeader from "./CardHeader";
-import CardBody from "./CardBody";
-import CardFooter from "./CardFooter";
-import IconButton from "../button/IconButton";
-import { CardItem, CardInfo } from "../../interfaces";
-import { CardDetails, CardDetailsList } from "./CardDetails";
-import { BoardContext } from "../../context/board-context";
-import { useNavigation } from "../../hooks/useNavigation";
+import * as React from 'react';
+import { useContext, useMemo } from 'react';
+import { Text } from '@fluentui/react/lib/Text';
+import CardHeader from './CardHeader';
+import CardBody from './CardBody';
+import { CardItem, CardInfo } from '../../interfaces';
+import { CardDetails, CardDetailsList } from './CardDetails';
+import { BoardContext } from '../../context/board-context';
+import { useNavigation } from '../../hooks/useNavigation';
 
 interface IProps {
   item: CardItem;
-  triggerOnChange: (val: string) => void; 
+  triggerOnChange: (val: string) => void;
 }
 
 const Card = ({ item, triggerOnChange }: IProps) => {
@@ -25,13 +23,12 @@ const Card = ({ item, triggerOnChange }: IProps) => {
 
   const onCardClick = () => {
     triggerOnChange(`OPEN#${item.id.toString()}`);
-    
   };
 
   const cardDetails = useMemo(
     () =>
       Object.entries(item).filter(
-        (k) => !["title", "tag", "id", "column"].includes(k[0])
+        (k) => !['title', 'tag', 'id', 'column'].includes(k[0])
       ),
     [item]
   );
@@ -40,11 +37,11 @@ const Card = ({ item, triggerOnChange }: IProps) => {
     <div
       className="card-container"
       style={{
-        width: cardWidth,
-        minWidth: 180,
-        maxWidth: 500,
+        // width: cardWidth,
+        // minWidth: 180,
+        maxWidth: 500
       }}
-       onClick={onCardClick}
+      onClick={onCardClick}
     >
       <CardHeader>
         <Text className="card-title" nowrap>

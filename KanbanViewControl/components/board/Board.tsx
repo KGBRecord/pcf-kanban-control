@@ -1,13 +1,13 @@
-import * as React from "react";
-import { useContext, useState } from "react";
+import * as React from 'react';
+import { useContext } from 'react';
 import {
   DragDropContext,
   DropResult,
-  ResponderProvided,
-} from "@hello-pangea/dnd";
-import { Column } from "..";
-import { BoardContext } from "../../context/board-context";
-import { useDnD } from "../../hooks/useDnD";
+  ResponderProvided
+} from '@hello-pangea/dnd';
+import { Column } from '..';
+import { BoardContext } from '../../context/board-context';
+import { useDnD } from '../../hooks/useDnD';
 
 const Board = (props: any) => {
   const { context, columns } = useContext(BoardContext);
@@ -29,9 +29,9 @@ const Board = (props: any) => {
     const destId = result.destination.droppableId;
 
     const record = {
-      update: { [stepField]: destId === "unallocated" ? null : destId },
+      update: { [stepField]: destId === 'unallocated' ? null : destId },
       id: result.draggableId,
-      columnName: destId,
+      columnName: destId
     };
 
     await onDragEnd(result, record);
@@ -40,7 +40,14 @@ const Board = (props: any) => {
   return (
     <div className="main-container">
       <div className="kanban-container">
-        <div className="columns-wrapper">
+        <div
+          className="columns-wrapper"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${columns.length}, 1fr)`,
+            width: context.mode.allocatedWidth - 32 + 'px'
+          }}
+        >
           <DragDropContext onDragEnd={handleCardDrag}>
             {columns.map((col) => (
               <Column
